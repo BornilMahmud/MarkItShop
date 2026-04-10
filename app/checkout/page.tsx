@@ -17,6 +17,9 @@ const CheckoutPage = () => {
     phone: "",
     adress: "",
     city: "",
+    paymentMethod: "bkash",
+    paymentPhone: "",
+    transactionId: "",
     orderNotice: "",
   });
 
@@ -39,6 +42,15 @@ const CheckoutPage = () => {
     }
     if (!checkoutForm.city.trim()) {
       errors.push("City is required");
+    }
+    if (!checkoutForm.paymentMethod.trim()) {
+      errors.push("Payment method is required");
+    }
+    if (!checkoutForm.paymentPhone.trim()) {
+      errors.push("Mobile banking number is required");
+    }
+    if (!checkoutForm.transactionId.trim()) {
+      errors.push("Transaction ID is required");
     }
     if (!session?.user?.email) {
       errors.push("Please login to place order and receive email confirmation");
@@ -90,6 +102,9 @@ const CheckoutPage = () => {
         email: userEmail,
         adress: checkoutForm.adress.trim(),
         city: checkoutForm.city.trim(),
+        paymentMethod: checkoutForm.paymentMethod.trim(),
+        paymentPhone: checkoutForm.paymentPhone.trim(),
+        transactionId: checkoutForm.transactionId.trim(),
         orderNotice: checkoutForm.orderNotice.trim(),
         total: checkoutTotal,
         userId,
@@ -138,6 +153,9 @@ const CheckoutPage = () => {
         phone: "",
         adress: "",
         city: "",
+        paymentMethod: "bkash",
+        paymentPhone: "",
+        transactionId: "",
         orderNotice: "",
       });
       clearCart();
@@ -150,7 +168,12 @@ const CheckoutPage = () => {
 
       setCreatedOrderId(orderId);
       setShowConfirmation(true);
-      toast.success("Order placed successfully");
+      if (data?.emailSent === false) {
+        toast.success("Order placed successfully");
+        toast.error("Order placed, but confirmation email was not sent. Please contact support.");
+      } else {
+        toast.success("Order placed successfully. Confirmation email sent.");
+      }
     } catch (error: any) {
       if (error.response?.status === 400) {
         try {
@@ -258,6 +281,10 @@ const CheckoutPage = () => {
 
               <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
                 We will use your account email ({session?.user?.email || "not logged in"}) to send order confirmation.
+              </div>
+
+              <div className="mt-4 rounded-lg border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-700">
+                Payment system: Mobile Banking (bKash, Nagad, Rocket).
               </div>
 
               <div className="mt-6 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
@@ -389,6 +416,87 @@ const CheckoutPage = () => {
                         })
                       }
                     ></textarea>
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="payment-method"
+                    className="block text-sm font-semibold text-slate-700"
+                  >
+                    Mobile Banking Method *
+                  </label>
+                  <div className="mt-1">
+                    <select
+                      id="payment-method"
+                      name="payment-method"
+                      required
+                      disabled={isSubmitting}
+                      className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      value={checkoutForm.paymentMethod}
+                      onChange={(e) =>
+                        setCheckoutForm({
+                          ...checkoutForm,
+                          paymentMethod: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="bkash">bKash</option>
+                      <option value="nagad">Nagad</option>
+                      <option value="rocket">Rocket</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="payment-phone"
+                    className="block text-sm font-semibold text-slate-700"
+                  >
+                    Mobile Banking Number *
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="tel"
+                      id="payment-phone"
+                      name="payment-phone"
+                      required
+                      disabled={isSubmitting}
+                      className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      value={checkoutForm.paymentPhone}
+                      onChange={(e) =>
+                        setCheckoutForm({
+                          ...checkoutForm,
+                          paymentPhone: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label
+                    htmlFor="transaction-id"
+                    className="block text-sm font-semibold text-slate-700"
+                  >
+                    Transaction ID *
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="text"
+                      id="transaction-id"
+                      name="transaction-id"
+                      required
+                      disabled={isSubmitting}
+                      className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 shadow-sm transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      value={checkoutForm.transactionId}
+                      onChange={(e) =>
+                        setCheckoutForm({
+                          ...checkoutForm,
+                          transactionId: e.target.value,
+                        })
+                      }
+                    />
                   </div>
                 </div>
               </div>

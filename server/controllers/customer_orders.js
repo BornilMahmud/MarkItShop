@@ -16,6 +16,9 @@ const normalizeOrderStatus = (status = "pending") => {
 
 async function createCheckoutOrder(request, response) {
   try {
+    const paymentMethod = `${request.body?.paymentMethod || ""}`.trim().toLowerCase();
+    const paymentPhone = `${request.body?.paymentPhone || ""}`.trim();
+    const transactionId = `${request.body?.transactionId || ""}`.trim();
     const fullName = `${request.body?.fullName || ""}`.trim();
     const phone = `${request.body?.phone || ""}`.trim();
     const email = `${request.body?.email || ""}`.trim().toLowerCase();
@@ -50,6 +53,27 @@ async function createCheckoutOrder(request, response) {
       return response.status(400).json({
         error: "Validation failed",
         details: [{ field: "address", message: "City and address are required" }],
+      });
+    }
+
+    if (!paymentMethod || !["bkash", "nagad", "rocket"].includes(paymentMethod)) {
+      return response.status(400).json({
+        error: "Validation failed",
+        details: [{ field: "paymentMethod", message: "Valid mobile banking method is required" }],
+      });
+    }
+
+    if (!paymentPhone) {
+      return response.status(400).json({
+        error: "Validation failed",
+        details: [{ field: "paymentPhone", message: "Mobile banking number is required" }],
+      });
+    }
+
+    if (!transactionId) {
+      return response.status(400).json({
+        error: "Validation failed",
+        details: [{ field: "transactionId", message: "Transaction ID is required" }],
       });
     }
 
@@ -116,13 +140,9 @@ async function createCheckoutOrder(request, response) {
       city,
       country: `${request.body?.country || "Bangladesh"}`.trim() || "Bangladesh",
       orderNotice: `${request.body?.orderNotice || ""}`.trim(),
-      paymentMethod: `${request.body?.paymentMethod || "bkash"}`.trim() || "bkash",
-      paymentPhone:
-        `${request.body?.paymentPhone || phone}`.trim() ||
-        phone,
-      transactionId:
-        `${request.body?.transactionId || `manual-${Date.now()}`}`.trim() ||
-        `manual-${Date.now()}`,
+      paymentMethod,
+      paymentPhone,
+      transactionId,
     };
 
     const subtotal = normalizedItems.reduce((sum, item) => {
@@ -207,6 +227,7 @@ async function createCheckoutOrder(request, response) {
       console.error("Failed to create order notification:", notificationError);
     }
 
+    let emailSent = false;
     try {
       // Prepare itemized list for email
       const itemsForEmail = normalizedItems.map((item) => {
@@ -218,7 +239,7 @@ async function createCheckoutOrder(request, response) {
         };
       });
 
-      await sendOrderConfirmationEmail({
+      emailSent = await sendOrderConfirmationEmail({
         to: normalizedOrderData.email,
         customerName: `${normalizedOrderData.name} ${normalizedOrderData.lastname}`.trim(),
         orderId: createdOrder.id,
@@ -247,6 +268,7 @@ async function createCheckoutOrder(request, response) {
       orderNumber: createdOrder.id,
       total: finalTotal,
       currency: CURRENCY_BDT,
+      emailSent,
     });
   } catch (error) {
     console.error("Error creating checkout order:", error);

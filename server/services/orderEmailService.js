@@ -76,7 +76,7 @@ const sendOrderConfirmationEmail = async ({
 
   if (!transporter) {
     console.log('SMTP configuration missing. Skipping order confirmation email.');
-    return;
+    return false;
   }
 
   const fromEmail =
@@ -85,6 +85,10 @@ const sendOrderConfirmationEmail = async ({
     process.env.ADMIN_NOTIFICATION_EMAIL ||
     process.env.SMTP_USER;
   const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
+  if (!fromEmail) {
+    console.error('Missing sender email configuration. Set BREVO_FROM_EMAIL or SMTP_FROM.');
+    return false;
+  }
   const paymentMethodLabel = `${paymentMethod}`.toUpperCase();
 
   const templateData = {
@@ -150,8 +154,10 @@ const sendOrderConfirmationEmail = async ({
   try {
     await transporter.sendMail(mailPayload);
     console.log(`✓ Order confirmation email sent to ${to}${adminEmail ? ` (CC: ${adminEmail})` : ''}`);
+    return true;
   } catch (error) {
     console.error('Error sending order confirmation email:', error && error.message ? error.message : error);
+    return false;
   }
 };
 
