@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - MarkitShop</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px 20px;
+        }
+        .greeting {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .order-details {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .detail-value {
+            text-align: right;
+            color: #333;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 2px solid #667eea;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .total-label {
+            color: #667eea;
+        }
+        .total-value {
+            color: #667eea;
+        }
+        .payment-section {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .payment-section h3 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+            font-size: 14px;
+        }
+        .payment-info {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.8;
+        }
+        .shipping-section {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .shipping-section h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .shipping-info {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+        }
+        .items-section {
+            margin: 20px 0;
+        }
+        .items-section h3 {
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+        }
+        .item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .item-name {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+        }
+        .item-qty {
+            color: #999;
+            font-size: 13px;
+            margin: 0 15px;
+        }
+        .item-price {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 80px;
+            text-align: right;
+        }
+        .footer {
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .cta-button:hover {
+            background: #764ba2;
+        }
+        .status-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .detail-row, .total-row {
+                flex-direction: column;
+            }
+            .detail-value, .total-value {
+                text-align: left;
+                margin-top: 5px;
+            }
+            .item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .item-price {
+                margin-top: 10px;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✓ Order Confirmed</h1>
+            <p>Thank you for your purchase!</p>
+        </div>
+
+        <div class="content">
+            <div class="greeting">
+                <p>Hello {{customerName}},</p>
+                <p>Your order has been successfully placed and confirmed. You can track your order using the details below.</p>
+            </div>
+
+            <span class="status-badge">Order Confirmed</span>
+
+            <div class="order-details">
+                <div class="detail-row">
+                    <span class="detail-label">Order ID:</span>
+                    <span class="detail-value"><strong>{{orderId}}</strong></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Order Date:</span>
+                    <span class="detail-value">{{orderDate}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Subtotal:</span>
+                    <span class="detail-value">{{subtotal}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Shipping Charge:</span>
+                    <span class="detail-value">{{shippingCharge}} BDT</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Total Amount:</span>
+                    <span class="total-value">{{total}}</span>
+                </div>
+            </div>
+
+            {{#items}}
+            <div class="items-section">
+                <h3>Order Items</h3>
+                {{#items}}
+                <div class="item">
+                    <span class="item-name">{{itemName}}</span>
+                    <span class="item-qty">Qty: {{quantity}}</span>
+                    <span class="item-price">{{itemPrice}}</span>
+                </div>
+                {{/items}}
+            </div>
+            {{/items}}
+
+            <div class="payment-section">
+                <h3>PAYMENT INFORMATION</h3>
+                <div class="payment-info">
+                    <strong>Payment Method:</strong> {{paymentMethod}}<br>
+                    <strong>Mobile Number:</strong> {{paymentPhone}}<br>
+                    <strong>Transaction ID:</strong> {{transactionId}}<br>
+                    <strong>Status:</strong> Pending Payment
+                </div>
+            </div>
+
+            <div class="shipping-section">
+                <h3>SHIPPING ADDRESS</h3>
+                <div class="shipping-info">
+                    <strong>{{customerName}}</strong><br>
+                    {{address}}<br>
+                    {{apartment}}<br>
+                    {{city}}, {{country}} {{postalCode}}<br>
+                    Phone: {{phone}}
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="color: #999; font-size: 14px;">
+                    Please retain this email for your records. If you have any questions, please contact our support team.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>MarkitShop</strong> - Modern Electronics eCommerce</p>
+            <p>Contact: bornilmahmud738@gmail.com | Phone: +8801747692524</p>
+            <p style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 15px;">
+                © 2026 MarkitShop. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
